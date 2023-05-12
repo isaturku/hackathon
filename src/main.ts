@@ -112,6 +112,19 @@ const obj = {
 
 const grid = new DynamicGrid(obj,document.getElementById("grid") as HTMLDivElement);
 
+grid.on("add",console.log);
+grid.on("change",console.log);
+grid.on("remove",console.log);
+
+const addPopUp = document.getElementById("add-popup");
+
+obj.layout.columns.forEach((col)=>{
+  const colInputDiv = document.createElement("div");
+  colInputDiv.className = "newRowInputContainer";
+  const label = document.createElement("label");
+  label.innerText = col+": ";
+  const input = document.createElement("input");
+});
 
 
 

@@ -41,6 +41,9 @@ export default class DynamicGrid {
       headerCol.className = "header-col";
       headerRow.append(headerCol);
     });
+    const deleteHeader = document.createElement("div");
+    deleteHeader.className = "header-col";
+    headerRow.append(deleteHeader);
     return headerRow;
   }
   private createDataRow(row: any[], indexRow: number) {
@@ -73,6 +76,13 @@ export default class DynamicGrid {
       dataCol.className = "data-col";
       dataRow.append(dataCol);
     });
+    const deleteButton = document.createElement("button");
+    const deleteButtonContainer = document.createElement("div");
+    deleteButtonContainer.className = "data-col";
+    deleteButton.innerText="delete";
+    deleteButtonContainer.append(deleteButton);
+    deleteButton.onclick=()=>this.remove(indexRow);
+    dataRow.append(deleteButtonContainer);
     return dataRow;
   }
   public add(row: any[]) {

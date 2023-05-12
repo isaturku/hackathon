@@ -7,8 +7,7 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <button>Add row</button>
-    <div id="add-popup"></div>
+
     <div id="grid"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
