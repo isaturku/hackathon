@@ -10,8 +10,10 @@ type TGrid = {
 
 export default class DynamicGrid {
   gridDomElement: HTMLDivElement;
+  rows: (string | number)[][];
   constructor(layoutObject: TGrid, domElement: HTMLDivElement) {
     this.gridDomElement = domElement;
+    this.rows = layoutObject.rows;
     domElement.append(this.createHeaderRow(layoutObject.layout.columns));
     layoutObject.rows.forEach((row) =>
       domElement.append(this.createDataRow(row))
@@ -45,8 +47,15 @@ export default class DynamicGrid {
   public remove(index: number) {
     if (this.gridDomElement.childElementCount <= index) {
       throw new Error("Index is out of bounds");
-    } 
-    
-    this.gridDomElement.removeChild()
+    }
+    const nodeToRemove = this.gridDomElement.childNodes[index];
+    this.gridDomElement.removeChild(nodeToRemove);
+  }
+  public items(): (string | number)[][] {
+    return this.rows;
+  }
+
+  public get(index: number): (string | number)[] {
+    return this.rows[index];
   }
 }
