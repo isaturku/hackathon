@@ -13,7 +13,7 @@ type TEvent = typeof events[number];
 type TAddCallback = (addInfo: { index: number; data: any[] }) => void;
 
 type TChangeCallback = (
-  changeInfo: { col: number; row: number; oldVal: any[]; newVal: [] },
+  changeInfo: { col: number; row: number; oldVal: any; newVal: any },
 ) => void;
 
 type TRemoveCallback = (removeInfo: { index: number; data: any[] }) => void;
@@ -28,8 +28,8 @@ export default class DynamicGrid {
     this.gridDomElement = domElement;
     this.rows = layoutObject.rows;
     domElement.append(this.createHeaderRow(layoutObject.layout.columns));
-    layoutObject.rows.forEach((row) =>
-      domElement.append(this.createDataRow(row))
+    layoutObject.rows.forEach((row, index) =>
+      domElement.append(this.createDataRow(row, index))
     );
   }
   private createHeaderRow(cols: string[]) {
@@ -43,11 +43,32 @@ export default class DynamicGrid {
     });
     return headerRow;
   }
-  private createDataRow(row: any[]) {
+  private createDataRow(row: any[], indexRow: number) {
     const dataRow = document.createElement("div");
     dataRow.className = "data-row";
-    row.forEach((col) => {
+    row.forEach((col, indexCol) => {
       const dataCol = document.createElement("div");
+      dataCol.addEventListener("dblclick", (e) => {
+        const div = e.currentTarget as HTMLDivElement;
+        const oldVal = div.innerText;
+        div.innerHTML = `<input id="input-to-pick" value="${oldVal}"></input>`;
+        const input = document.getElementById(
+          "input-to-pick",
+        ) as HTMLInputElement;
+        input.focus();
+        input.onblur = (e) => {
+          const inputToBlur = e.currentTarget as HTMLInputElement;
+          const newVal = inputToBlur.value;
+          this.rows[indexRow][indexCol] = newVal;
+          div.innerHTML = `<div>${newVal}</div>`;
+          this.changeCallback?.({
+            col: indexCol,
+            row: indexRow,
+            oldVal,
+            newVal,
+          });
+        };
+      });
       dataCol.innerText = col.toString();
       dataCol.className = "data-col";
       dataRow.append(dataCol);
@@ -56,7 +77,7 @@ export default class DynamicGrid {
   }
   public add(row: any[]) {
     this.rows.push(row);
-    this.gridDomElement.append(this.createDataRow(row));
+    this.gridDomElement.append(this.createDataRow(row, this.rows.length - 1));
     this.addCallBack?.({ index: this.rows.length - 1, data: row });
   }
   public remove(index: number) {
