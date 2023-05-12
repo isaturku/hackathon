@@ -7,8 +7,14 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <button>Add row</button>
-    <div id="add-popup"></div>
+    <div id="add-row">
+      <input
+        type="text"
+        id="row-input"
+        placehoder="Add row values separated by commas"
+      />
+      <button id="add-button">Add row</button>
+    </div>
     <div id="grid"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
