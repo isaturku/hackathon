@@ -110,7 +110,9 @@ const obj = {
   ],
 };
 
-const grid = new DynamicGrid(obj,document.getElementById("grid") as HTMLDivElement)
+const grid = new DynamicGrid(obj,document.getElementById("grid") as HTMLDivElement);
+
+
 
 
 

@@ -57,7 +57,7 @@ export default class DynamicGrid {
   public add(row: any[]) {
     this.rows.push(row);
     this.gridDomElement.append(this.createDataRow(row));
-    this.callbacks.get("add")?.({ index: this.rows.length - 1, data: row });
+    this.addCallBack?.({ index: this.rows.length - 1, data: row });
   }
   public remove(index: number) {
     if (this.gridDomElement.childElementCount <= index) {
@@ -65,7 +65,7 @@ export default class DynamicGrid {
     }
     const nodeToRemove = this.gridDomElement.childNodes[index];
     this.gridDomElement.removeChild(nodeToRemove);
-    this.callbacks.get("remove")?.({ index, data: this.rows[index] });
+    this.removeCallback?.({ index, data: this.rows[index] });
     this.rows.splice(index, 1);
   }
   public items(): any[][] {
@@ -76,9 +76,18 @@ export default class DynamicGrid {
     return this.rows[index];
   }
   public on(e: TEvent, callback: () => void) {
-    this.callbacks.set(e, callback);
-  }
-  public on(e: "add", callback: TAddCallback) {
-    this.callbacks.set(e, callback);
+    switch (e) {
+      case "add":
+        this.addCallBack = callback;
+        break;
+      case "change":
+        this.changeCallback = callback;
+        break;
+      case "remove":
+        this.removeCallback = callback;
+        break;
+      default:
+        throw new Error("Event not supported");
+    }
   }
 }
