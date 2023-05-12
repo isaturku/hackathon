@@ -8,9 +8,22 @@ type TGrid = {
   rows: (string | number)[][];
 };
 
+const events = ["change", "add", "remove"] as const;
+type TEvent = typeof events[number];
+type TAddCallback = (addInfo: { index: number; data: any[] }) => void;
+
+type TChangeCallback = (
+  changeInfo: { col: number; row: number; oldVal: any[]; newVal: [] },
+) => void;
+
+type TRemoveCallback = (removeInfo: { index: number; data: any[] }) => void;
+
 export default class DynamicGrid {
   gridDomElement: HTMLDivElement;
-  rows: (string | number)[][];
+  rows: any[][];
+  addCallBack?: TAddCallback;
+  changeCallback?: TChangeCallback;
+  removeCallback?: TRemoveCallback;
   constructor(layoutObject: TGrid, domElement: HTMLDivElement) {
     this.gridDomElement = domElement;
     this.rows = layoutObject.rows;
@@ -30,7 +43,7 @@ export default class DynamicGrid {
     });
     return headerRow;
   }
-  private createDataRow(row: (string | number)[]) {
+  private createDataRow(row: any[]) {
     const dataRow = document.createElement("div");
     dataRow.className = "data-row";
     row.forEach((col) => {
@@ -41,8 +54,10 @@ export default class DynamicGrid {
     });
     return dataRow;
   }
-  public add(row: (string | number)[]) {
+  public add(row: any[]) {
+    this.rows.push(row);
     this.gridDomElement.append(this.createDataRow(row));
+    this.callbacks.get("add")?.({ index: this.rows.length - 1, data: row });
   }
   public remove(index: number) {
     if (this.gridDomElement.childElementCount <= index) {
@@ -50,12 +65,20 @@ export default class DynamicGrid {
     }
     const nodeToRemove = this.gridDomElement.childNodes[index];
     this.gridDomElement.removeChild(nodeToRemove);
+    this.callbacks.get("remove")?.({ index, data: this.rows[index] });
+    this.rows.splice(index, 1);
   }
-  public items(): (string | number)[][] {
+  public items(): any[][] {
     return this.rows;
   }
 
-  public get(index: number): (string | number)[] {
+  public get(index: number): any[] {
     return this.rows[index];
+  }
+  public on(e: TEvent, callback: () => void) {
+    this.callbacks.set(e, callback);
+  }
+  public on(e: "add", callback: TAddCallback) {
+    this.callbacks.set(e, callback);
   }
 }
